@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guest registration</title>
+
+    <link href="libs/css/fontawesome/css/all.css" rel="stylesheet">
+    <link href="css/quicksand.css" rel="stylesheet">
+    <script src="libs/js/sweetalert.js"></script>
+    <script type="text/javascript" src="libs/js/jquery.js"></script>
+    <link href="css/materialComponents.css" rel="stylesheet">
+
+	<script src="js/scan.js"></script>
+	<script src="js/index.js"></script>
+    <link rel="stylesheet" href="css/index.css" />
+
+	<meta name="viewport" content = "width = device-width, initial-scale = 1.0, minimum-scale = 1, maximum-scale = 1, user-scalable = no" />
+	<meta name="apple-mobile-web-app-title" content="Oasis mobile" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<link href="images/logo-white.png" rel="apple-touch-startup-image" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+	<link rel="apple-touch-icon" href="images/logo-black-bg.png">
+	<link rel="apple-touch-startup-image" href="images/logo-black-bg.png">
+</head>
+<body onload="startTime();getScan();getEnterExitPopup()">
+    <header class="structure-header">
+        <div class="structure-header-container">
+            <i class="fad fa-clipboard-list-check"></i>
+            <span>Guest Registration</span>
+        </div>
+        <div class="structure-header-container" style="margin-left:auto;width:90px;">
+            <i class="fal fa-clock"></i>
+            <span id="timeContainer" style="width:50px"></span>
+        </div>
+    </header>
+    <div class="logo-container">
+		<img src="images/logo.png" alt="Logo Oasis">
+    </div>
+    <div class="form-outer-container">
+        <form onsubmit="submitForm(this,event)" method="POST">
+            <div class="form-inner-container form-double-container">
+                <div class="form-inner-container-child form-inner-container-child-left">
+                    <div class="form-input-label">
+                        <i class="fad fa-user-edit"></i>
+                        <span>Name</span>
+                    </div>
+                    <textarea class='form-input form-input-1-line' id="nome" placeholder="Your name..." required></textarea>
+                </div>
+                <div class="form-inner-container-child form-inner-container-child-right">
+                    <div class="form-input-label">
+                        <i class="fad fa-user-edit"></i>
+                        <span>Surname</span>
+                    </div>
+                    <textarea class='form-input form-input-1-line' id="cognome" placeholder="Your surname..." required></textarea>
+                </div>
+            </div>
+            <div class="form-inner-container form-single-container">
+                <div class="form-input-label">
+                    <i class="far fa-building"></i>
+                    <span>Company name</span>
+                </div>
+                <textarea class='form-input form-input-1-line' id="ditta" placeholder="Your comapny name..." required></textarea>
+            </div>
+            <div class="form-inner-container form-double-container">
+                <div class="form-inner-container-child form-inner-container-child-left">
+                    <div class="form-input-label">
+                        <i class="far fa-passport"></i>
+                        <span>Document type</span>
+                    </div>
+                    <select class='form-input' id="tipo_documento" >
+                        <option value="" disabled selected>Your document type...</option>
+                        <option value="Passport">Passport</option>
+                        <option value="Licence">Driving Licence</option>
+                        <option value="Identity card">Identity Card</option>
+                    </select>
+                </div>
+                <div class="form-inner-container-child form-inner-container-child-right">
+                    <div class="form-input-label">
+                        <i class="far fa-passport"></i>
+                        <span>Document number</span>
+                    </div>
+                    <textarea class='form-input form-input-1-line' id="numero_documento" placeholder="Your document number..." ></textarea>
+                </div>
+            </div>
+            <div class="form-inner-container form-single-container" id="scanContainer">
+                <script>
+                    enableScan=false;
+                    if(!enableScan)
+                        document.getElementById("scanContainer").style.display="none";
+                </script>
+                <div class="form-input-label">
+                    <i class="fad fa-scanner-image"></i>
+                    <span>Document scan</span>
+                </div>
+                <div class="document-scan-controls" id="documentScanControls">
+                    <button type="button"  id="startButton" style="margin-right: 20px;">
+                        <span>START</span>
+                        <i class="fas fa-play"></i>
+                    </button>
+                    <button type="button"  id="stopButton" style="margin-right: 20px;">
+                        <span>STOP</span>
+                        <i class="fas fa-pause"></i>
+                    </button>
+                    <div id="scanSuggestionContainer" style="margin-left:auto;margin-right: 20px;"></div>
+                    <button type="button" id="captureButton" onclick="scan()">
+                        <span>SCAN</span>
+                        <i class="fad fa-camera-alt"></i>
+                    </button>
+                </div>
+                <div class="document-scan-preview" id="documentScanPreview">
+                    <div class="document-scan-preview-row">
+                        <div class="document-scan-preview-title">PREVIEW</div>
+                        <div class="document-scan-preview-title">SCANNED IMAGE</div>
+                    </div>
+                    <div class="document-scan-preview-row">
+                        <div class="document-scan-preview-item" id="videoPlayerContainer">
+                            <video id="videoPlayer" autoplay></video>
+                        </div>
+                        <div class="document-scan-preview-item" id="capureOutputCanvasContainer">
+                            <div id="captureOutputCanvasHint" onclick="scan()">
+                                <span>PRESS SCAN</span>
+                                <i class="fal fa-camera-alt fa-3x"></i>
+                            </div>
+                            <canvas id="capureOutputCanvas"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-inner-container form-single-container">
+                <div class="form-input-label">
+                    <i class="fad fa-comment-alt-lines"></i>
+                    <span>Notes</span>
+                </div>
+                <textarea class='form-input form-input-3-line' id="note" placeholder="Possible notes..."></textarea>
+            </div>
+            <div class="form-inner-container form-single-container" style="margin-top: 30px;">
+                <div class="form-input-label" style="padding-bottom:10px;border-bottom:1px solid rgb(146, 146, 146)">
+                    <i class="fad fa-exclamation-triangle"></i>
+                    <span>About the <b style="color:#DA6969">Coronavirus</b> </span>
+                </div>
+            </div>
+            <div class="form-inner-container form-single-container">
+                <div class="form-input-label">
+                    <i class="fad fa-user-nurse"></i>
+                    <span>Stay or transit in countries / locations at risk of infection</span>
+                </div>
+                <div class="form-input-container form-input-container-double">
+                    <label class="material-radio-button-container">No
+                        <input type="radio" name="radio_paesi_a_rischio" value="No" onchange="if(this.checked){$('#info_paesi_a_rischio_container').hide('fast','swing')}" checked="checked">
+                        <span class="material-radio-button-checkmark"></span>
+                    </label>
+                    <label class="material-radio-button-container" style="margin-left:10px">Yes
+                        <input type="radio" name="radio_paesi_a_rischio" value="Yes" onchange="if(this.checked){$('#info_paesi_a_rischio_container').show('fast','swing')}">
+                        <span class="material-radio-button-checkmark"></span>
+                    </label>
+                </div>
+            </div>
+            <div id="info_paesi_a_rischio_container" style="display: none;" class="form-inner-container form-double-container">
+                <div class="form-inner-container-child form-inner-container-child-left">
+                    <div class="form-input-label">
+                        <i class="fad fa-globe-europe"></i>
+                        <span>Country / Location</span>
+                    </div>
+                    <textarea class='form-input form-input-1-line' id="coronavirus_paese_a_rischio" placeholder="Name of the country / location..." ></textarea>
+                </div>
+                <div class="form-inner-container-child form-inner-container-child-right">
+                    <div class="form-input-label">
+                        <i class="fad fa-calendar-alt"></i>
+                        <span>Date of departure from the risk zone</span>
+                    </div>
+                    <input type="date" class='form-input' id="coronavirus_data_partenza_paese_a_rischio" ></input>
+                </div>
+            </div>
+            <div class="form-inner-container form-single-container">
+                <div class="form-input-label">
+                    <i class="fad fa-user-nurse"></i>
+                    <span>Exposure to confirmed cases of infection</span>
+                </div>
+                <div class="form-input-container form-input-container-double">
+                    <label class="material-radio-button-container">No
+                        <input type="radio" name="radio_esposizione_a_casi_accertati" value="No" checked="checked">
+                        <span class="material-radio-button-checkmark"></span>
+                    </label>
+                    <label class="material-radio-button-container" style="margin-left:10px">Yes
+                        <input type="radio" name="radio_esposizione_a_casi_accertati" value="Yes">
+                        <span class="material-radio-button-checkmark"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="form-inner-container form-single-container">
+                <div class="form-input-label">
+                    <i class="fad fa-user-nurse"></i>
+                    <span>Exposure to suspicious or risky cases of infection</span>
+                </div>
+                <div class="form-input-container form-input-container-double">
+                    <label class="material-radio-button-container">No
+                        <input type="radio" name="radio_esposizione_a_casi_sospetti" value="No" checked="checked">
+                        <span class="material-radio-button-checkmark"></span>
+                    </label>
+                    <label class="material-radio-button-container" style="margin-left:10px">Yes
+                        <input type="radio" name="radio_esposizione_a_casi_sospetti" value="Yes">
+                        <span class="material-radio-button-checkmark"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="form-inner-container form-single-container">
+                <div class="form-input-label">
+                    <i class="fad fa-user-nurse"></i>
+                    <span>Exposure to people returning from countries / locations at risk of infection</span>
+                </div>
+                <div class="form-input-container form-input-container-double">
+                    <label class="material-radio-button-container">No
+                        <input type="radio" name="radio_esposizione_persone_paesi_a_rischio" value="No" checked="checked">
+                        <span class="material-radio-button-checkmark"></span>
+                    </label>
+                    <label class="material-radio-button-container" style="margin-left:10px">Yes
+                        <input type="radio" name="radio_esposizione_persone_paesi_a_rischio" value="Yes">
+                        <span class="material-radio-button-checkmark"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="form-inner-container form-single-container">
+                <div class="form-input-label">
+                    <i class="fad fa-user-nurse"></i>
+                    <span>Contacts with family members of suspicious cases of infection</span>
+                </div>
+                <div class="form-input-container form-input-container-double">
+                    <label class="material-radio-button-container">No
+                        <input type="radio" name="radio_esposizione_familiari_casi_a_rischio" value="No" checked="checked">
+                        <span class="material-radio-button-checkmark"></span>
+                    </label>
+                    <label class="material-radio-button-container" style="margin-left:10px">Yes
+                        <input type="radio" name="radio_esposizione_familiari_casi_a_rischio" value="Yes">
+                        <span class="material-radio-button-checkmark"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="form-inner-container form-single-container">
+                <button class="form-confirm-button" id="formConfirmButton">
+                    <span>SUBMIT</span>
+                    <i id="formConfirmButtonIcon" class="fad fa-paper-plane"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
